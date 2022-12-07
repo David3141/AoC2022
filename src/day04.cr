@@ -13,4 +13,13 @@ result01 = boundary_pairs.count do |pair|
   first_is_in_second || second_is_in_first
 end
 
+result02 = boundary_pairs.count do |pair|
+  first, second = pair
+  min1, max1 = first
+  min2, max2 = second
+
+  (min2 <= max1 && min2 >= min1) || (min1 <= max2 && min1 >= min2)
+end
+
 puts result01
+puts result02
