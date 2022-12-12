@@ -9,14 +9,7 @@ def find_common_priority(str : String)
   left = str[...(str.size // 2)]
   right = str[(str.size // 2)...]
 
-  element = nil
-
-  left.each_char do |c|
-    if right.includes? c
-      element = c
-      break
-    end
-  end
+  element = Char::Reader.new(left).find { |c| right.includes? c }
 
   PRIORITIES[element]
 end
@@ -24,13 +17,8 @@ end
 def find_common_priority(strings)
   first, second, third = strings
 
-  element = nil
-
-  first.each_char do |c|
-    if second.includes?(c) && third.includes?(c)
-      element = c
-      break
-    end
+  element = Char::Reader.new(first).find do |c|
+    second.includes?(c) && third.includes?(c)
   end
 
   PRIORITIES[element]
