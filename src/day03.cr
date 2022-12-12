@@ -9,19 +9,19 @@ def find_common_priority(str : String)
   left = str[...(str.size // 2)]
   right = str[(str.size // 2)...]
 
-  element = Char::Reader.new(left).find { |c| right.includes? c }
+  common = Char::Reader.new(left).find { |c| right.includes? c }
 
-  PRIORITIES[element]
+  PRIORITIES[common]
 end
 
 def find_common_priority(strings)
   first, second, third = strings
 
-  element = Char::Reader.new(first).find do |c|
+  common = Char::Reader.new(first).find do |c|
     second.includes?(c) && third.includes?(c)
   end
 
-  PRIORITIES[element]
+  PRIORITIES[common]
 end
 
 result01 = rucksacks.map { |str| find_common_priority(str) }.sum
