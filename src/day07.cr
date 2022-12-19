@@ -1,14 +1,14 @@
 class Directory
-  property parent : Directory | Nil
-  property dirs : Array(Directory)
-  property files : Array(Tuple(String, Int32))
+  getter dirs : Array(Directory)
+  getter files : Array(Tuple(String, Int32))
   getter name : String
+  getter parent : Directory | Nil
 
   def initialize(name, parent)
-    @name = name
-    @parent = parent
     @dirs = [] of Directory
     @files = [] of Tuple(String, Int32)
+    @name = name
+    @parent = parent
   end
 
   def full_path
@@ -31,61 +31,67 @@ class Directory
   end
 end
 
-CD_DIR = /^\$ cd ([a-zA-Z0-9]+)$/
-DIR    = /^dir ([a-zA-Z0-9]+)/
-FILE   = /^(\d+) ([a-zA-Z0-9\.]+)/
+CD_DIR        = /^\$ cd ([a-zA-Z0-9]+)$/
+DIR_NAME      = /^dir ([a-zA-Z0-9]+)$/
+SIZE_AND_FILE = /^(\d+) ([a-zA-Z0-9\.]+)$/
 
-ALL_DIRS = {
-  "/" => Directory.new("/", nil),
-}
+def parse_input
+  result = {
+    "/" => Directory.new("/", nil),
+  }
 
-current_directory = ALL_DIRS["/"]
+  current_directory = result["/"]
 
-File.read_lines("inputs/day07.txt").each do |line|
-  next unless current_directory
+  File.read_lines("inputs/day07.txt").each do |line|
+    next unless current_directory
 
-  if CD_DIR.match(line)
-    current_directory = current_directory.dirs.find { |dir| dir.name == $1 }
-    next
+    if CD_DIR.match(line)
+      current_directory = current_directory.dirs.find { |dir| dir.name == $1 }
+      next
+    end
+
+    if line == "$ cd .."
+      current_directory = current_directory.parent
+      next
+    end
+
+    if DIR_NAME.match(line)
+      new_directory = Directory.new($1, current_directory)
+      current_directory.dirs.push(new_directory)
+      result[new_directory.full_path] = new_directory
+      next
+    end
+
+    if SIZE_AND_FILE.match(line)
+      current_directory.files.push({$2, $1.to_i})
+      next
+    end
   end
 
-  if line == "$ cd .."
-    current_directory = current_directory.parent
-    next
-  end
-
-  if DIR.match(line)
-    new_directory = Directory.new($1, current_directory)
-    current_directory.dirs.push(new_directory)
-    ALL_DIRS[new_directory.full_path] = new_directory
-    next
-  end
-
-  if FILE.match(line)
-    current_directory.files.push({$2, $1.to_i})
-    next
-  end
+  result
 end
 
 def solve_1
-  puts ALL_DIRS
-    .select { |k, dir| dir.size <= 100_000 }
-    .map { |k, dir| dir.size }
+  puts parse_input
+    .select { |key, dir| dir.size <= 100_000 }
+    .map { |key, dir| dir.size }
     .sum
 end
 
 def solve_2
+  all_directories = parse_input
+
   total_space = 70_000_000
   space_needed = 30_000_000
-  used_space = ALL_DIRS["/"].size
+  used_space = all_directories["/"].size
   free_space = total_space - used_space
   space_to_delete = space_needed - free_space
 
-  dir_to_delete = ALL_DIRS
-    .select { |k, dir| dir.size >= space_to_delete }
-    .min_by { |k, dir| dir.size }
+  _, dir_to_delete = all_directories
+    .select { |key, dir| dir.size >= space_to_delete }
+    .min_by { |key, dir| dir.size }
 
-  puts dir_to_delete[1].size
+  puts dir_to_delete.size
 end
 
 solve_1
