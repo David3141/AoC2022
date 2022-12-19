@@ -67,7 +67,26 @@ File.read_lines("inputs/day07.txt").each do |line|
   end
 end
 
-puts ALL_DIRS
-  .select { |k, dir| dir.size <= 100_000 }
-  .map { |k, dir| dir.size }
-  .sum
+def solve_1
+  puts ALL_DIRS
+    .select { |k, dir| dir.size <= 100_000 }
+    .map { |k, dir| dir.size }
+    .sum
+end
+
+def solve_2
+  total_space = 70_000_000
+  space_needed = 30_000_000
+  used_space = ALL_DIRS["/"].size
+  free_space = total_space - used_space
+  space_to_delete = space_needed - free_space
+
+  dir_to_delete = ALL_DIRS
+    .select { |k, dir| dir.size >= space_to_delete }
+    .min_by { |k, dir| dir.size }
+
+  puts dir_to_delete[1].size
+end
+
+solve_1
+solve_2
