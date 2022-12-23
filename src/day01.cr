@@ -1,9 +1,15 @@
-groups = File.read("inputs/day01.txt")
-  .split("\n\n")
-  .map(&.lines.map(&.to_i))
+class Day01
+  def solve_1
+    input.map(&.sum).max
+  end
 
-result01 = groups.map(&.sum).max
-result02 = groups.map(&.sum).sort.last(3).sum
+  def solve_2
+    input.map(&.sum).sort.last(3).sum
+  end
 
-puts result01
-puts result02
+  private def input
+    File.read("inputs/day01.txt")
+      .split("\n\n")
+      .map(&.lines.map(&.to_i))
+  end
+end
