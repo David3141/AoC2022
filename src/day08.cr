@@ -1,3 +1,5 @@
+require "benchmark"
+
 def parse_input
   File.read_lines("inputs/day08.txt").map do |line|
     Char::Reader.new(line).map &.to_i
@@ -37,7 +39,7 @@ def count_visible(arr, n)
   count
 end
 
-def solve_2
+def solve_2_bad
   input = parse_input
   input_transposed = input.transpose
   max_x = input[0].size - 1
@@ -63,5 +65,59 @@ def solve_2
   current_max_scenic_score
 end
 
+def scenic_score_for(input, x, y)
+  max_x = input[0].size - 1
+  max_y = input.size - 1
+
+  count_left = 0
+  count_right = 0
+  count_down = 0
+  count_up = 0
+
+  subject = input[y][x]
+
+  (x - 1).downto(0) do |i|
+    count_left += 1
+    break if input[y][i] >= subject
+  end
+
+  (x + 1).upto(max_x) do |i|
+    count_right += 1
+    break if input[y][i] >= subject
+  end
+
+  (y - 1).downto(0) do |i|
+    count_up += 1
+    break if input[i][x] >= subject
+  end
+
+  (y + 1).upto(max_y) do |i|
+    count_down += 1
+    break if input[i][x] >= subject
+  end
+
+  count_left * count_right * count_up * count_down
+end
+
+def solve_2_good
+  input = parse_input
+  current_max_scenic_score = 0
+
+  input.map_with_index do |row, y|
+    row.map_with_index { |_, x| scenic_score_for(input, x, y) }
+  end.max_of(&.max)
+end
+
 puts solve_1
-puts solve_2
+
+Benchmark.bm do |x|
+  x.report("bad") do
+    result = solve_2_bad
+    # puts result
+  end
+
+  x.report("good") do
+    result = solve_2_good
+    # puts result
+  end
+end
