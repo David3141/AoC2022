@@ -4,9 +4,22 @@ class Day10
 
     [20, 60, 100, 140, 180, 220].map { |x| x * cycles[x - 1] }.sum
   end
-  
+
   def solve_2
-    4
+    cycles = create_cycles
+    crt = Array.new(240) { |n| n }
+    result = ""
+
+    cycles.zip(crt) do |sprite_pos, crt_pos|
+      pixel = (sprite_pos - crt_pos % 40).abs <= 1 ? '#' : '.'
+      result += pixel
+    end
+
+    Char::Reader.new(result).in_groups_of(40).each do |line|
+      puts line.join
+    end
+
+    "⬆️"
   end
 
   private def create_cycles
