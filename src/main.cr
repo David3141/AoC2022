@@ -8,6 +8,7 @@ require "./day05.cr"
 require "./day06.cr"
 require "./day07.cr"
 require "./day08.cr"
+require "./day09.cr"
 
 DAYS = {
   1 => Day01,
@@ -18,6 +19,7 @@ DAYS = {
   6 => Day06,
   7 => Day07,
   8 => Day08,
+  9 => Day09,
 }
 
 run_as_benchmark = false
