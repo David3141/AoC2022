@@ -11,10 +11,18 @@ class Day09
   end
 
   def solve_1
-    tail_positions = [] of Tuple(Int32, Int32)
+    solve(size_of_tail: 1)
+  end
+
+  def solve_2
+    solve(size_of_tail: 9)
+  end
+
+  private def solve(size_of_tail)
+    tail = Array.new(size_of_tail, { 0, 0 })
+    tail_end__positions = [] of Tuple(Int32, Int32)
     head_x = 0
     head_y = 0
-    tail = { 0, 0 }
 
     parse_input.each do |(direction, distance)|
       distance.times do
@@ -25,17 +33,19 @@ class Day09
         else head_x += 1
         end
 
-        tail = follow({ head_x, head_y }, tail)
+        new_tail = [] of Tuple(Int32, Int32)
 
-        tail_positions.push(tail)
+        [{ head_x, head_y }, *tail].each_cons_pair do |a, b|
+          new_tail.push follow(a, b)
+        end
+
+        tail = new_tail
+
+        tail_end__positions.push(tail.last)
       end
     end
 
-    tail_positions.uniq.size
-  end
-
-  def solve_2
-    0
+    tail_end__positions.uniq.size
   end
 
   private def follow(head, tail)
