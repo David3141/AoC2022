@@ -1,8 +1,13 @@
 class Day11
-  def solve_1
-    monkeys = parse_input
+  getter monkeys : Array(Monkey)
 
-    20.times { play_round(monkeys) }
+  def initialize
+    @monkeys = parse_input
+    monkeys.each { |monkey| monkey.all_monkeys = monkeys }
+  end
+
+  def solve_1
+    20.times { play_round }
 
     monkeys.map(&.inspection_count).sort.last(2).product
   end
@@ -11,8 +16,8 @@ class Day11
     0
   end
 
-  private def play_round(monkeys : Array(Monkey))
-    monkeys.each(&.process_items(monkeys))
+  private def play_round
+    monkeys.each(&.process_items)
   end
 
   class Monkey
@@ -22,12 +27,14 @@ class Day11
     property target_index_true : Int32
     property target_index_false : Int32
     getter inspection_count
+    property all_monkeys : Array(Monkey)
 
     def initialize(@items, @operation, @test_divisible_by, @target_index_true, @target_index_false)
       @inspection_count = 0
+      @all_monkeys = [] of Monkey
     end
 
-    def process_items(all_monkeys : Array(Monkey))
+    def process_items
       @inspection_count += items.size
 
       items.each do |worry_level|
